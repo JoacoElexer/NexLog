@@ -88,6 +88,7 @@ Esta estructura satisface el objetivo de contar con al menos tres vistas diferen
 - Mapa: Leaflet o Mapbox.
 - Backend: Node.js + Express.
 - Base de datos: MongoDB Atlas + Mongoose.
+- Validar las peticiones y geometrías GeoJSON en `src/validators/`; los modelos Mongoose definen la persistencia y sus relaciones, no las reglas de entrada.
 - Geometrías: GeoJSON Point para ubicaciones y Polygon para zonas, coordenadas en orden `[longitud, latitud]` e índice `2dsphere`.
 - Seguridad: contraseñas cifradas con bcrypt; secretos únicamente en `.env`; incluir `.env.example`.
 - Despliegue público de frontend, backend y base de datos accesible durante la revisión.

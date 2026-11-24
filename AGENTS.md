@@ -41,8 +41,9 @@ Reglas:
 ## 4. Arquitectura y backend
 
 - Backend con Node.js y Express.
-- Mantener separación por capas: `config`, `models`, `routes`, `services`, `middlewares` y `utils`.
+- Mantener separación por capas: `config`, `models`, `routes`, `services`, `middlewares`, `validators` y `utils`.
 - Las rutas reciben/validan la petición y delegan la lógica al servicio.
+- Las reglas de validación de entradas (incluidas las geometrías GeoJSON) pertenecen a `validators/`, nunca a los modelos. Los modelos describen la persistencia y sus relaciones.
 - La lógica de negocio y operaciones Mongoose pertenecen a los servicios.
 - Usar Mongoose para MongoDB Atlas.
 - Centralizar errores con un mecanismo consistente (`AppError`, middleware 404 y `errorHandler`, según la estructura del proyecto).

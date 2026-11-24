@@ -48,7 +48,8 @@ Actualizar este archivo durante el desarrollo con:
 - [ ] Vista de aprobación de usuarios.
 - [ ] Vista de configuración.
 - [ ] Despliegue y pruebas finales.
-- [ ] README, `.env.example`, usuario de prueba y reporte PDF.
+- [x] README inicial con propósito, funcionamiento previsto, estado actual y ejecución del backend.
+- [ ] Usuario de prueba y reporte PDF.
 
 ### Decisiones pendientes
 

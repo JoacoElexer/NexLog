@@ -17,11 +17,13 @@ Después de cada cambio significativo, actualizar los archivos `.md` afectados:
 - `context.md`: decisiones estables, alcance, requisitos, reglas de negocio, actores, permisos y restricciones.
 - `design.md`: cambios de vistas, navegación, componentes, interacción, distribución visual y comportamiento responsive.
 - `project.md`: estado real del proyecto, funcionalidades terminadas/en curso/pendientes, tareas siguientes, bloqueos, decisiones recientes y pruebas ejecutadas.
+- `README.md`: actualizar únicamente cuando se detecte un avance significativo; reflejar solo el estado general del proyecto y sus capacidades principales. No incluir cambios pequeños, detalles de implementación ni una bitácora de commits.
 - `AGENTS.md`: únicamente cuando cambien las reglas permanentes de trabajo, arquitectura o colaboración para agentes.
 
 Reglas:
 - No esperar a que el usuario solicite la actualización.
 - No modificar todos los documentos por rutina: actualizar solo los que correspondan al cambio.
+- Mantener el README como presentación general del proyecto; los avances menores y detalles de trabajo se registran en `project.md` cuando corresponda.
 - No registrar como terminado algo que solo está planeado o parcialmente implementado.
 - No borrar decisiones o pendientes relevantes sin explicar su resolución.
 - Mantener los documentos coherentes entre sí y con el código real.

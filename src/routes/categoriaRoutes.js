@@ -10,19 +10,10 @@ const service = new CategoriaService();
 
 router.get('/', async (req, res, next) => {
   try {
-    const ubicaciones = await ubicacionService.getAll(req.query);
-    res.status(200).json(ubicaciones);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/geojson', async (req, res, next) => {
-  try {
-    const ubicaciones = await ubicacionService.getGeoJson(req.query);
-    res.status(200).json(ubicaciones);
-  } catch (error) {
-    next(error);
+    const data = await service.getAll();
+    res.status(200).json(data);
+  } catch (err) {
+    next(err);
   }
 });
 

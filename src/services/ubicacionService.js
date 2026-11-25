@@ -1,6 +1,7 @@
 "use strict";
 
 const AppError = require('../utils/appError');
+const ZonaReparto = require('../models/ZonaReparto');
 const Ubicacion = require('../models/Ubicacion');
 const mongoose = require('mongoose');
 function escapeRegex(str) {
@@ -33,18 +34,13 @@ class UbicacionService {
       if (!mongoose.isObjectIdOrHexString(filters.zona)) {
         throw new AppError(400, 'zona debe ser un ObjectId válido.');
       }
-      // Resolve zona polygon and add $geoWithin condition
-      return ZonaReparto.findById(filters.zona)
-        .then(zona => {
-          if (!zona) {
-            throw new AppError(404, 'Zona no encontrada.');
-          }
-          query.ubicacion = { $geoWithin: { $geometry: zona.geometria } };
-          return populateUbicacion(Ubicacion.find(query).sort({ createdAt: -1 }));
-        });
+
+      query.zona = filters.zona;
     }
     // No zona filter – regular find
-    return populateUbicacion(Ubicacion.find(query).sort({ createdAt: -1 }));
+    return populateUbicacion(
+      Ubicacion.find(query).sort({ createdAt: -1 })
+    );
   }
 
   async getGeoJson(filters = {}) {
@@ -57,14 +53,21 @@ class UbicacionService {
         nombre: doc.nombre,
         descripcion: doc.descripcion,
         categoria: doc.categoria ? doc.categoria.nombre : null,
-        zona: doc.zona ? doc.zona.toString() : null,
+        zona: doc.zona
+          ? {
+            id: doc.zona._id,
+            nombre: doc.zona.nombre,
+          }
+          : null,
       },
     }));
     return { type: 'FeatureCollection', features };
   }
 
   async getById(id) {
-    const doc = await Ubicacion.findById(id).populate('categoria', 'nombre');
+    const doc = await populateUbicacion(
+      Ubicacion.findById(id)
+    );
     if (!doc) {
       throw new AppError(404, 'Ubicación no encontrada.');
     }
@@ -72,15 +75,23 @@ class UbicacionService {
   }
 
   async create(data) {
-    return Ubicacion.create(data);
+    const created = await Ubicacion.create(data);
+    return this.getById(created._id);
   }
 
   async patch(id, data) {
-    const updated = await Ubicacion.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    const updated = await Ubicacion.findByIdAndUpdate(
+      id,
+      data,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!updated) {
       throw new AppError(404, 'Ubicación no encontrada.');
     }
-    return updated;
+    return this.getById(updated._id);
   }
 
   async delete(id) {

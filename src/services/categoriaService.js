@@ -2,6 +2,7 @@
 
 const AppError = require('../utils/appError');
 const Categoria = require('../models/Categoria');
+const Ubicacion = require('../models/Ubicacion');
 
 class CategoriaService {
   async getAll() {
@@ -40,11 +41,19 @@ class CategoriaService {
   }
 
   async delete(id) {
-    const removed = await Categoria.findByIdAndDelete(id);
-    if (!removed) {
+    const existing = await Categoria.findById(id);
+    if (!existing) {
       throw new AppError(404, 'Categoría no encontrada.');
     }
-    return removed;
+    const isInUse = await Ubicacion.exists({ categoria: id });
+    if (isInUse) {
+      throw new AppError(
+        409,
+        'No se puede eliminar la categoría porque está asignada a una o más ubicaciones.'
+      );
+    }
+    await Categoria.findByIdAndDelete(id);
+    return existing;
   }
 }
 

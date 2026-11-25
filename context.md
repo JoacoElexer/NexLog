@@ -25,6 +25,7 @@ La problemática formal del proyecto se redactará posteriormente. No inventar n
 - Roles de administrador y operador. La matriz de permisos detallada debe mantenerse documentada y confirmarse antes de implementar permisos no definidos.
 - CRUD de centros de distribución.
 - CRUD de entregas.
+- Las entregas incluyen una categoría textual para identificar y filtrar su punto de destino en el mapa.
 - CRUD de rutas.
 - CRUD de repartidores.
 - CRUD de vehículos.
@@ -78,7 +79,7 @@ La aplicación tendrá estas vistas:
 1. **Acceso y registro:** inicio de sesión y formulario de registro. El registro genera una solicitud pendiente y no inicia sesión automáticamente.
 2. **Panel operativo:** vista unificada con mapa central, barra lateral tipo explorador de IDE, filtros/capas y gestión contextual de entidades.
 3. **Aprobación de usuarios:** listado de solicitudes pendientes y consulta de solicitudes procesadas, con acciones para aprobar o rechazar según permisos.
-4. **Configuración:** opciones funcionales generales de la aplicación, accesibles únicamente al administrador.
+4. **Configuración:** opciones funcionales generales de la aplicación, accesibles únicamente al administrador. [Pendiente de aprobar]
 
 Esta estructura satisface el objetivo de contar con al menos tres vistas diferenciadas sin dividir la operación en dashboards independientes por entidad. No incluir secretos, credenciales ni configuración técnica sensible en la vista de configuración: esos valores permanecen en variables de entorno.
 
@@ -88,14 +89,16 @@ Esta estructura satisface el objetivo de contar con al menos tres vistas diferen
 - Mapa: Leaflet o Mapbox.
 - Backend: Node.js + Express.
 - Base de datos: MongoDB Atlas + Mongoose.
-- Validar las peticiones y geometrías GeoJSON en `src/validators/`; los modelos Mongoose definen la persistencia y sus relaciones, no las reglas de entrada.
+- Validar las peticiones y geometrías GeoJSON en `src/middlewares/`. Los modelos Mongoose definen la persistencia y las relaciones, y marcan con `required: true` los campos obligatorios.
 - Geometrías: GeoJSON Point para ubicaciones y Polygon para zonas, coordenadas en orden `[longitud, latitud]` e índice `2dsphere`.
-- Seguridad: contraseñas cifradas con bcrypt; secretos únicamente en `.env`; incluir `.env.example`.
+- Seguridad: contraseñas cifradas con bcrypt; autenticación de sesión mediante JWT (`jsonwebtoken` vía `Authorization: Bearer`); secretos únicamente en `.env`; incluir `.env.example`.
 - Despliegue público de frontend, backend y base de datos accesible durante la revisión.
 
-No asumir decisiones aún no confirmadas (por ejemplo, React frente a Vue, Leaflet frente a Mapbox, librerías de UI o mecanismo de sesión). Proponer opciones y registrar la decisión cuando se tome.
+No asumir decisiones aún no confirmadas (por ejemplo, React frente a Vue, Leaflet frente a Mapbox o librerías de UI). Proponer opciones y registrar la decisión cuando se tome.
 
 ## 9. Requisitos de evaluación que deben preservarse
+
+La rúbrica ponderada, sus reglas de entrega y sus requisitos de revisión están resumidos en `rubrica.md`; consultarlo junto con este alcance antes de implementar.
 
 - Login y registro.
 - Al menos tres CRUD completos de entidades distintas de usuarios, ubicaciones y zonas. Los CRUD acordados de entregas, rutas, repartidores y vehículos cubren este requisito; centros también tendrá CRUD.

@@ -6,13 +6,18 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "seed": "node src/data/seedAll.js",
+    "seed:admins": "node src/data/seedAdmins.js",
+    "test": "node --test tests/auth.test.js tests/validators.test.js tests/routes.crud.test.js",
+    "test:live": "node --test tests/live.login.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.13.0"
   },
   "devDependencies": {

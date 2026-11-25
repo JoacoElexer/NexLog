@@ -1,12 +1,14 @@
+"use strict";
+
 const mongoose = require('mongoose');
 
 const usuarioSchema = new mongoose.Schema(
   {
-    nombre: { type: String, trim: true },
-    correo: { type: String, trim: true, lowercase: true, unique: true },
-    passwordHash: { type: String, select: false },
-    rol: { type: String, default: 'operador' },
-    estado: { type: String, default: 'pendiente', index: true }
+    nombre: { type: String, required: true, trim: true },
+    correo: { type: String, required: true, trim: true, lowercase: true, unique: true },
+    passwordHash: { type: String, required: true, select: false },
+    rol: { type: String, required: true, default: 'operador' },
+    estado: { type: String, required: true, default: 'pendiente', index: true }
   },
   { timestamps: true, versionKey: false },
 );

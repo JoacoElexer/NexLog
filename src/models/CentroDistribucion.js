@@ -1,22 +1,24 @@
+"use strict";
+
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
 const centroDistribucionSchema = new Schema(
   {
-    nombre: { type: String, trim: true },
-    gerente: { type: String, trim: true },
+    nombre: { type: String, required: true, trim: true },
+    gerente: { type: String, required: true, trim: true },
     direccion: { 
-      calle: { type: String, trim: true },
-      ciudad: { type: String, trim: true },
-      estado: { type: String, trim: true }
+      calle: { type: String, required: true, trim: true },
+      ciudad: { type: String, required: true, trim: true },
+      estado: { type: String, required: true, trim: true }
     },
     ubicacion: {
-      type: { type: String, default: 'Point' },
-      coordinates: { type: [Number] },
+      type: { type: String, required: true, default: 'Point' },
+      coordinates: { type: [Number], required: true },
     },
-    coberturaKm: { type: Number },
-    estado: { type: String, default: 'operativo' },
+    coberturaKm: { type: Number, required: true },
+    estado: { type: String, required: true, default: 'operativo' },
   },
   {
     timestamps: true,

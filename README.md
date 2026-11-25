@@ -22,14 +22,16 @@ Las coordenadas GeoJSON se almacenan en orden `[longitud, latitud]`. Las ubicaci
 
 ## Estado del proyecto
 
-El backend cuenta con el arranque de Express, conexión configurada para MongoDB mediante Mongoose, modelos de datos, validadores de entrada y un endpoint de salud. La API de operaciones, autenticación, interfaz web, mapa y simulación todavía están pendientes de implementación.
+El backend en Express cuenta con conexión configurada para MongoDB mediante Mongoose, modelos de datos, validadores de entrada y GeoJSON, servicios y rutas CRUD para las entidades operativas, autenticación con JWT (`bcrypt` + `jsonwebtoken`), control de acceso por rol e inicialización de administradores mediante variables de entorno. La asignación geográfica avanzada, la interfaz web, el mapa interactivo y la simulación de seguimiento están pendientes de implementación.
 
-Endpoints disponibles actualmente:
+Capacidades principales disponibles en la API:
 
-- `GET /`: información básica de la API.
-- `GET /api/health`: estado básico del servicio.
+- `GET /` y `GET /api/health`: información general y estado del servicio.
+- `/api/auth`: registro público pendiente de aprobación, inicio de sesión con JWT y consulta del perfil autenticado.
+- `/api/centros-distribucion`, `/api/zonas-reparto`, `/api/entregas`, `/api/rutas`, `/api/repartidores` y `/api/vehiculos`: operaciones CRUD y consultas GeoJSON protegidas por autenticación.
+- `/api/usuarios`: administración y aprobación de cuentas restringida al rol `administrador`.
 
-La conexión a MongoDB se establece antes de que el servidor comience a escuchar. Para arrancar, se requiere una `MONGO_URI` válida.
+La conexión a MongoDB se establece antes de que el servidor comience a escuchar. Para arrancar, se requiere una `MONGO_URI` válida y configurar `JWT_SECRET` en `.env`.
 
 ## Tecnologías
 
@@ -37,7 +39,7 @@ La conexión a MongoDB se establece antes de que el servidor comience a escuchar
 - Express 5.
 - MongoDB Atlas y Mongoose 9.
 - CORS y dotenv para configuración del servidor.
-- bcrypt está instalado para el manejo seguro de contraseñas cuando se implemente autenticación.
+- bcrypt y jsonwebtoken para cifrado de contraseñas y autenticación con JWT.
 - nodemon para desarrollo.
 
 ## Requisitos previos
@@ -73,15 +75,15 @@ Por defecto, el servidor utiliza el puerto `3000`. Puede configurarse mediante `
 
 ```text
 src/
-├── config/         Configuración y conexión a MongoDB
-├── middlewares/    Errores y validación de peticiones
+├── config/         Configuración, conexión a MongoDB y seed de administradores
+├── middlewares/    Errores, autenticación/roles y validación de peticiones y GeoJSON
 ├── models/         Esquemas Mongoose y relaciones
-├── routes/         Rutas HTTP
-├── utils/          Utilidades compartidas
-└── validators/     Validación de entidades y geometrías GeoJSON
+├── routes/         Rutas HTTP de autenticación y entidades
+├── services/       Lógica de negocio y operaciones Mongoose
+└── utils/          Utilidades compartidas
 ```
 
-Los modelos representan `CentroDistribucion`, `ZonaReparto`, `Entrega`, `Ruta`, `Repartidor`, `Vehiculo` y `Usuario`. Las reglas de entrada se mantienen en `validators/`; las rutas deben aplicarlas antes de delegar las operaciones a los servicios.
+Los modelos representan `CentroDistribucion`, `ZonaReparto`, `Entrega`, `Ruta`, `Repartidor`, `Vehiculo` y `Usuario`. Las reglas de entrada y autorización se aplican en `middlewares/` antes de delegar las operaciones a `services/`.
 
 ## Alcance
 

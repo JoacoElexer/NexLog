@@ -1,4 +1,7 @@
+"use strict";
+
 const AppError = require('../utils/appError');
+const mongoose = require('mongoose');
 
 function validateRequest(validator) {
   return (req, res, next) => {
@@ -8,4 +11,13 @@ function validateRequest(validator) {
   };
 }
 
-module.exports = validateRequest;
+function validateObjectIdParam(parameter = 'id') {
+  return (req, res, next) => {
+    if (!mongoose.isObjectIdOrHexString(req.params[parameter])) {
+      return next(new AppError(400, `${parameter} debe ser un ObjectId válido.`));
+    }
+    next();
+  };
+}
+
+module.exports = { validateRequest, validateObjectIdParam };

@@ -2,12 +2,14 @@
 
 const app = require("./app");
 const { connectDatabase, disconnectDatabase } = require("./config/database");
+const { seedAdmins } = require("./data/seedAdmins");
 
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
     try {
         await connectDatabase();
+        await seedAdmins({ strict: false });
         const server = app.listen(PORT, () => {
             console.log("Servidor corriendo en el puerto " + PORT);
             console.log("localhost: http://localhost:" + PORT + "/api/health");

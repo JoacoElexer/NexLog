@@ -1,10 +1,12 @@
+"use strict";
+
 const mongoose = require('mongoose');
 
 const repartidorSchema = new mongoose.Schema(
   {
-    nombre: { type: String, trim: true },
-    telefono: { type: String, trim: true },
-    estado: { type: String, default: 'disponible' },
+    nombre: { type: String, required: true, trim: true },
+    telefono: { type: String, required: true, trim: true },
+    estado: { type: String, required: true, default: 'disponible' },
   },
   { timestamps: true, versionKey: false },
 );

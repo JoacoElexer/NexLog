@@ -5,8 +5,9 @@
 1. Leer `context.md` para comprender el objetivo y los límites del sistema.
 2. Leer `design.md` antes de modificar la interfaz.
 3. Leer `project.md` para conocer el estado, las tareas actuales, los avances y los bloqueos.
-4. Revisar la estructura y convenciones existentes del repositorio antes de crear o reemplazar archivos.
-5. No asumir que una tecnología o decisión está aprobada si no aparece documentada.
+4. Leer `rubrica.md` antes de implementar o cambiar funcionalidades para conservar los criterios, ponderaciones y entregables de evaluación.
+5. Revisar la estructura y convenciones existentes del repositorio antes de crear o reemplazar archivos.
+6. No asumir que una tecnología o decisión está aprobada si no aparece documentada.
 
 ## 2. Regla obligatoria de mantenimiento de documentación
 
@@ -21,6 +22,7 @@ Después de cada cambio significativo, actualizar los archivos `.md` afectados:
 - `AGENTS.md`: únicamente cuando cambien las reglas permanentes de trabajo, arquitectura o colaboración para agentes.
 
 Reglas:
+
 - No esperar a que el usuario solicite la actualización.
 - No modificar todos los documentos por rutina: actualizar solo los que correspondan al cambio.
 - Mantener el README como presentación general del proyecto; los avances menores y detalles de trabajo se registran en `project.md` cuando corresponda.
@@ -43,9 +45,9 @@ Reglas:
 ## 4. Arquitectura y backend
 
 - Backend con Node.js y Express.
-- Mantener separación por capas: `config`, `models`, `routes`, `services`, `middlewares`, `validators` y `utils`.
+- Mantener separación por capas: `config`, `models`, `routes`, `services`, `middlewares` y `utils`.
 - Las rutas reciben/validan la petición y delegan la lógica al servicio.
-- Las reglas de validación de entradas (incluidas las geometrías GeoJSON) pertenecen a `validators/`, nunca a los modelos. Los modelos describen la persistencia y sus relaciones.
+- Las validaciones de las peticiones y geometrías GeoJSON pertenecen a `middlewares/`. Los modelos describen la persistencia, sus relaciones y marcan con `required: true` los campos obligatorios de cada documento.
 - La lógica de negocio y operaciones Mongoose pertenecen a los servicios.
 - Usar Mongoose para MongoDB Atlas.
 - Centralizar errores con un mecanismo consistente (`AppError`, middleware 404 y `errorHandler`, según la estructura del proyecto).

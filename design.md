@@ -18,7 +18,7 @@ La aplicación tendrá cuatro vistas diferenciadas:
 1. **Acceso y registro:** pantalla pública para iniciar sesión o solicitar una cuenta.
 2. **Panel operativo:** vista autenticada unificada con mapa, explorador de entidades y filtros.
 3. **Aprobación de usuarios:** vista administrativa para revisar solicitudes de registro.
-4. **Configuración:** vista administrativa para modificar opciones funcionales de la aplicación.
+4. **Configuración:** vista administrativa para modificar opciones funcionales de la aplicación. [Pendiente de aprobar]
 
 La navegación autenticada debe permitir llegar al panel operativo y, únicamente para administradores, a las vistas de aprobación y configuración. Los operadores no deben visualizar ni poder abrir estas secciones.
 

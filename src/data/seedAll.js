@@ -78,7 +78,7 @@ if (require.main === module) {
     try {
       await connectDatabase();
       const summary = await seedAll();
-      console.log('Resultado del seed de datos demo:', summary);
+      console.log('Resultado del seed general:', summary);
     } catch (error) {
       console.error('Error ejecutando el seed general:', error.message);
       process.exitCode = 1;

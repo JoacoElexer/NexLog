@@ -2,30 +2,36 @@
 
 const Ruta = require('../models/Ruta');
 const Entrega = require('../models/Entrega');
+const CentroDistribucion = require('../models/CentroDistribucion');
+const Repartidor = require('../models/Repartidor');
+const Vehiculo = require('../models/Vehiculo');
+const { CENTROS_DISTRIBUCION_DATA } = require('./seedCentrosDistribucion');
+const { REPARTIDORES_DATA } = require('./seedRepartidores');
+const { VEHICULOS_DATA } = require('./seedVehiculos');
+const { buildEntregasData } = require('./seedEntregas');
+const { insertarFaltantes, buscarRequeridos, ejecutarSeed } = require('./seedUtils');
 
 const ESTADOS_RUTA = ['planificada', 'en_curso', 'pausada', 'completada', 'cancelada'];
+const CENTROS_LEON = 5;
 
+// Cada ruta sale del centro de León que atiende a su entrega principal.
 function buildRutasData(centrosDocs, repartidoresDocs, vehiculosDocs, entregasDocs) {
   return Array.from({ length: 15 }, (_, index) => {
     const num = String(index + 1).padStart(2, '0');
-    const centro = centrosDocs[index];
+    const centro = centrosDocs[index % CENTROS_LEON];
     const entregaPrincipal = entregasDocs[index];
     const repartidor = index < 10 ? repartidoresDocs[index] : null;
     const vehiculo = index < 10 ? vehiculosDocs[index] : null;
     const centroCoords = centro.ubicacion.coordinates;
     const entregaCoords = entregaPrincipal.destino.coordinates;
+    const nombreCorto = centro.nombre.replace('CEDIS ', '');
 
     return {
-      nombre: `Ruta Demo ${num}`,
+      nombre: `Ruta ${nombreCorto} ${num}`,
       centro: centro.id,
       repartidor: repartidor ? repartidor.id : null,
       vehiculo: vehiculo ? vehiculo.id : null,
-      paradas: [
-        {
-          entrega: entregaPrincipal.id,
-          orden: 1,
-        },
-      ],
+      paradas: [{ entrega: entregaPrincipal.id, orden: 1 }],
       geometria: {
         type: 'LineString',
         coordinates: [
@@ -46,39 +52,29 @@ async function syncEntregasConRutas(rutasDocs) {
   const updates = [];
   for (const ruta of rutasDocs) {
     for (const parada of ruta.paradas || []) {
-      updates.push(
-        Entrega.updateOne(
-          { _id: parada.entrega, ruta: null },
-          { $set: { ruta: ruta._id } },
-        ),
-      );
+      updates.push(Entrega.updateOne({ _id: parada.entrega, ruta: null }, { $set: { ruta: ruta._id } }));
     }
   }
-  if (updates.length > 0) {
-    await Promise.all(updates);
-  }
+  if (updates.length > 0) await Promise.all(updates);
 }
 
 async function seedRutas(centrosDocs, repartidoresDocs, vehiculosDocs, entregasDocs) {
-  const payload = buildRutasData(centrosDocs, repartidoresDocs, vehiculosDocs, entregasDocs);
-  const nombres = payload.map((item) => item.nombre);
-  const existingDocs = await Ruta.find({ nombre: { $in: nombres } });
-  const existingByName = new Map(existingDocs.map((doc) => [doc.nombre, doc]));
+  const centros = centrosDocs || await buscarRequeridos(
+    CentroDistribucion, CENTROS_DISTRIBUCION_DATA.map((c) => c.nombre), 'nombre', 'seed:centros');
+  const repartidores = repartidoresDocs || await buscarRequeridos(
+    Repartidor, REPARTIDORES_DATA.map((r) => r.nombre), 'nombre', 'seed:repartidores');
+  const vehiculos = vehiculosDocs || await buscarRequeridos(
+    Vehiculo, VEHICULOS_DATA.map((v) => v.placa), 'placa', 'seed:vehiculos');
+  const entregas = entregasDocs || await buscarRequeridos(
+    Entrega, buildEntregasData([], []).map((e) => e.destinatario.nombre), 'destinatario.nombre', 'seed:entregas');
 
-  const missing = payload.filter((item) => !existingByName.has(item.nombre));
-  if (missing.length > 0) {
-    const inserted = await Ruta.insertMany(missing);
-    inserted.forEach((doc) => existingByName.set(doc.nombre, doc));
-  }
+  const resultado = await insertarFaltantes(Ruta, buildRutasData(centros, repartidores, vehiculos, entregas));
+  await syncEntregasConRutas(resultado.docs);
+  return resultado;
+}
 
-  const allDocs = payload.map((item) => existingByName.get(item.nombre));
-  await syncEntregasConRutas(allDocs);
-
-  return {
-    total: existingByName.size,
-    created: missing.length,
-    docs: allDocs,
-  };
+if (require.main === module) {
+  ejecutarSeed('rutas', () => seedRutas());
 }
 
 module.exports = { buildRutasData, seedRutas };

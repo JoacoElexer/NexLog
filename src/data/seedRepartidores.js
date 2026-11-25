@@ -1,36 +1,28 @@
 "use strict";
 
 const Repartidor = require('../models/Repartidor');
+const { insertarFaltantes, ejecutarSeed } = require('./seedUtils');
 
-const ESTADOS = ['disponible', 'asignado', 'inactivo'];
+const NOMBRES = [
+  'Juan Pérez Gómez', 'María López Hernández', 'Luis Hernández Ruiz', 'Ana Ramírez Torres',
+  'Carlos Martínez Díaz', 'Sofía García Morales', 'Jorge Sánchez Flores', 'Fernanda Cruz Ortiz',
+  'Ricardo Mendoza Vargas', 'Daniela Castillo Reyes', 'Miguel Ángel Rojas Peña', 'Paola Jiménez Salas',
+  'Alejandro Navarro Ponce', 'Valeria Gutiérrez Luna', 'Eduardo Aguilar Campos',
+];
 
-const REPARTIDORES_DATA = Array.from({ length: 15 }, (_, index) => {
-  const num = String(index + 1).padStart(2, '0');
-  const estado = index < 10 ? 'asignado' : index < 13 ? 'disponible' : 'inactivo';
-
-  return {
-    nombre: `Repartidor Prueba ${num}`,
-    telefono: `555-010-${1000 + index}`,
-    estado: ESTADOS.includes(estado) ? estado : 'disponible',
-  };
-});
+// Teléfonos con lada de León (477) y el prefijo 555, que se usa para datos de ejemplo.
+const REPARTIDORES_DATA = NOMBRES.map((nombre, index) => ({
+  nombre,
+  telefono: `477 555 ${String(101 + index).padStart(4, '0')}`,
+  estado: index < 10 ? 'asignado' : index < 13 ? 'disponible' : 'inactivo',
+}));
 
 async function seedRepartidores() {
-  const nombres = REPARTIDORES_DATA.map((item) => item.nombre);
-  const existingDocs = await Repartidor.find({ nombre: { $in: nombres } });
-  const existingByName = new Map(existingDocs.map((doc) => [doc.nombre, doc]));
+  return insertarFaltantes(Repartidor, REPARTIDORES_DATA);
+}
 
-  const missing = REPARTIDORES_DATA.filter((item) => !existingByName.has(item.nombre));
-  if (missing.length > 0) {
-    const inserted = await Repartidor.insertMany(missing);
-    inserted.forEach((doc) => existingByName.set(doc.nombre, doc));
-  }
-
-  return {
-    total: existingByName.size,
-    created: missing.length,
-    docs: REPARTIDORES_DATA.map((item) => existingByName.get(item.nombre)),
-  };
+if (require.main === module) {
+  ejecutarSeed('repartidores', seedRepartidores);
 }
 
 module.exports = { REPARTIDORES_DATA, seedRepartidores };
